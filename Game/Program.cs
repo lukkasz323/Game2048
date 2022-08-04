@@ -2,6 +2,14 @@
 {
     class Program
     {
+        enum Direction
+        {
+            Up,
+            Down,
+            Left,
+            Right
+        }
+
         static void UpdateScreen(int[,] board)
         {
             Console.Clear();
@@ -18,27 +26,48 @@
             }
         }
 
+        static void Move(Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.Up:
+                    break;
+                case Direction.Down:
+                    break;
+                case Direction.Left:
+                    break;
+                case Direction.Right:
+                    break;
+            }
+        }
+
         static void Main()
         {
             int[,] board = new int[4, 4];
             bool run = true;
+            ConsoleKeyInfo key;
 
             Console.Title = "Game 2048";
             while (run)
             {
                 UpdateScreen(board);
-                switch (Console.ReadKey().Key)
+                key = Console.ReadKey();
+                switch (key.Key)
                 {
                     case ConsoleKey.Escape:
                         run = false;
                         break;
                     case ConsoleKey.W:
+                        Move(Direction.Up);
                         break;
                     case ConsoleKey.S:
+                        Move(Direction.Down);
                         break;
                     case ConsoleKey.A:
+                        Move(Direction.Left);
                         break;
                     case ConsoleKey.D:
+                        Move(Direction.Right);
                         break;
                 }
             }
