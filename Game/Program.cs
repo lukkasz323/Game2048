@@ -1,9 +1,13 @@
-﻿namespace Game
+﻿using System;
+
+namespace Game
 {
     class Program
     {
-        enum Direction
+        enum Input
         {
+            None,
+            Quit,
             Up,
             Down,
             Left,
@@ -13,9 +17,7 @@
         static void UpdateScreen(int[,] board)
         {
             Console.Clear();
-            Console.WriteLine();
-            Console.WriteLine("  Use 'WASD' to move");
-            Console.WriteLine();
+            Console.WriteLine("\n  Use 'WASD' to move\n");
             for (int i = 0; i < board.GetLength(0); i++)
             {
                 for (int j = 0; j < board.GetLength(1); j++)
@@ -26,49 +28,78 @@
             }
         }
 
-        static void Move(Direction direction)
+        static void SpawnNumber(int[,] board)
+        {
+            int x, y;
+            bool run = false;
+            Random rng = new();
+
+            foreach (int value in board)
+            {
+                if (value == 0)
+                {
+                    run = true;
+                }
+            }
+            while (run)
+            {
+                x = rng.Next(board.GetLength(1));
+                y = rng.Next(board.GetLength(0));
+
+                if (board[y, x] == 0)
+                {
+                    board[y, x] = 1;
+                    break;
+                }
+            } 
+        }
+
+        static Input UserInput()
+        {
+            ConsoleKeyInfo key;
+
+            key = Console.ReadKey();
+            return key.Key switch
+            {
+                ConsoleKey.Escape => Input.Quit,
+                ConsoleKey.W => Input.Up,
+                ConsoleKey.S => Input.Down,
+                ConsoleKey.A => Input.Left,
+                ConsoleKey.D => Input.Right,
+                _ => Input.None
+            };
+        }
+
+        static void Move(Input direction)
         {
             switch (direction)
             {
-                case Direction.Up:
+                case Input.Up:
                     break;
-                case Direction.Down:
+                case Input.Down:
                     break;
-                case Direction.Left:
+                case Input.Left:
                     break;
-                case Direction.Right:
+                case Input.Right:
                     break;
             }
         }
 
         static void Main()
         {
+            Input input;
             int[,] board = new int[4, 4];
-            bool run = true;
-            ConsoleKeyInfo key;
-
+            
             Console.Title = "Game 2048";
-            while (run)
+            SpawnNumber(board);
+            while (true)
             {
+                SpawnNumber(board);
                 UpdateScreen(board);
-                key = Console.ReadKey();
-                switch (key.Key)
+                input = UserInput();
+                if (input == Input.Quit)
                 {
-                    case ConsoleKey.Escape:
-                        run = false;
-                        break;
-                    case ConsoleKey.W:
-                        Move(Direction.Up);
-                        break;
-                    case ConsoleKey.S:
-                        Move(Direction.Down);
-                        break;
-                    case ConsoleKey.A:
-                        Move(Direction.Left);
-                        break;
-                    case ConsoleKey.D:
-                        Move(Direction.Right);
-                        break;
+                    break;
                 }
             }
         }
