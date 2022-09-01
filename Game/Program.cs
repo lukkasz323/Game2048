@@ -22,7 +22,15 @@ namespace Game
             {
                 for (int j = 0; j < board.GetLength(1); j++)
                 {
-                    Console.Write($"   {board[i, j]}");
+                    int cell = board[i, j];
+                    if (cell == 0)
+                    {
+                        Console.Write("   -");
+                    }
+                    else
+                    {
+                        Console.Write($"   {cell}");
+                    }
                 }
                 Console.WriteLine("\n");
             }
@@ -54,7 +62,7 @@ namespace Game
             } 
         }
 
-        static Input GetUserInput()
+        static Input ReadUserInput()
         {
             ConsoleKeyInfo key;
 
@@ -70,28 +78,46 @@ namespace Game
             };
         }
 
-        static void Move(Input direction)
+        static void Move(Input direction, int[,] board)
         {
-            switch (direction)
+            bool checkNeeded = true;
+            int temp;
+            ValueTuple<int, int> shift;
+
+            while (checkNeeded)
             {
-                case Input.Up:
-                    break;
-                case Input.Down:
-                    break;
-                case Input.Left:
-                    break;
-                case Input.Right:
-                    break;
-            }
+                checkNeeded = false;
+                for (int y = 0; y < board.GetLength(0); y++)
+                {
+                    for (int x = 0; x < board.GetLength(1); x++)
+                    {
+                        try
+                        {
+                            shift = direction switch
+                            {
+                                Input.Up => (y - 1, x),
+                                Input.Down => (y + 1, x),
+                                Input.Left => (y, x - 1),
+                                Input.Right => (y, x + 1),
+                                _ => throw new InvalidOperationException(default)
+                            };
+                            if (board[shift.Item1, shift.Item2] == 0)
+                            {
+                                temp = board[y, x];
+                                board[y, x] = board[shift.Item1, shift.Item2];
+                                board[shift.Item1, shift.Item2] = temp;
+
+                                //checkNeeded = true;
+                            }
+                        }
+                        catch (IndexOutOfRangeException) { }
+                    }
+                }
+            }  
         }
 
-        static bool GameHasEnded(Input input, int[,] board)
+        static bool BoardIsFull(int[,] board)
         {
-            if (input == Input.Quit)
-            {
-                return true;
-            }
-
             foreach (int n in board)
             {
                 if (n == 0)
@@ -103,32 +129,43 @@ namespace Game
             return true;
         }
 
-        static void Main()
+        static void Run()
         {
             Input input;
             int[,] board = new int[4, 4];
-            bool run = true;
 
-            Console.Title = "Game 2048";
             SpawnNumber(board);
-            while (run)
+            while (true)
             {
                 SpawnNumber(board);
                 UpdateScreen(board);
                 while (true)
                 {
-                    input = GetUserInput();
-                    if (GameHasEnded(input, board))
+                    if (BoardIsFull(board))
                     {
-                        run = false;
+                        Console.WriteLine(" You've lost!");
+                        return;
+                    }
+
+                    input = ReadUserInput();
+                    if (input == Input.Quit)
+                    {
+                        Console.WriteLine(" Quit!");
+                        return;
                     }
                     if (input != Input.None)
                     {
                         break;
                     }
                 }
-                
+                Move(input, board);
             }
+        }
+
+        static void Main()
+        {
+            Console.Title = "Game 2048";
+            Run();
         }
     }
 }
