@@ -81,7 +81,6 @@ namespace Game
         static void Move(Input direction, int[,] board)
         {
             bool checkNeeded = true;
-            int temp;
             ValueTuple<int, int> shift;
 
             while (checkNeeded)
@@ -101,13 +100,15 @@ namespace Game
                                 Input.Right => (y, x + 1),
                                 _ => throw new InvalidOperationException(default)
                             };
-                            if (board[shift.Item1, shift.Item2] == 0)
-                            {
-                                temp = board[y, x];
-                                board[y, x] = board[shift.Item1, shift.Item2];
-                                board[shift.Item1, shift.Item2] = temp;
 
-                                //checkNeeded = true;
+                            ref int cell = ref board[y, x];
+                            ref int next_cell = ref board[shift.Item1, shift.Item2];
+
+                            if (cell > 0 && next_cell == 0)
+                            {
+                                (cell, next_cell) = (next_cell, cell);
+
+                                checkNeeded = true;
                             }
                         }
                         catch (IndexOutOfRangeException) { }
