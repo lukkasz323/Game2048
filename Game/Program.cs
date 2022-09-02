@@ -38,7 +38,6 @@ namespace Game
 
         static void SpawnNumber(int[,] board)
         {
-            int x, y;
             bool run = false;
             Random rng = new();
 
@@ -51,8 +50,8 @@ namespace Game
             }
             while (run)
             {
-                x = rng.Next(board.GetLength(1));
-                y = rng.Next(board.GetLength(0));
+                int x = rng.Next(board.GetLength(1));
+                int y = rng.Next(board.GetLength(0));
 
                 if (board[y, x] == 0)
                 {
@@ -140,14 +139,13 @@ namespace Game
             {
                 SpawnNumber(board);
                 UpdateScreen(board);
+                if (BoardIsFull(board))
+                {
+                    Console.WriteLine(" You've lost!");
+                    return;
+                }
                 while (true)
                 {
-                    if (BoardIsFull(board))
-                    {
-                        Console.WriteLine(" You've lost!");
-                        return;
-                    }
-
                     input = ReadUserInput();
                     if (input == Input.Quit)
                     {
