@@ -38,8 +38,8 @@ namespace Game
 
         static void SpawnNumber(int[,] board)
         {
-            bool run = false;
             Random rng = new();
+            bool run = false;
 
             foreach (int value in board)
             {
@@ -63,10 +63,7 @@ namespace Game
 
         static Input ReadUserInput()
         {
-            ConsoleKeyInfo key;
-
-            key = Console.ReadKey(true);
-            return key.Key switch
+            return Console.ReadKey(true).Key switch
             {
                 ConsoleKey.Escape => Input.Quit,
                 ConsoleKey.W => Input.Up,
@@ -80,8 +77,6 @@ namespace Game
         static void Move(Input direction, int[,] board)
         {
             bool checkNeeded = true;
-            ValueTuple<int, int> shift;
-
             while (checkNeeded)
             {
                 checkNeeded = false;
@@ -91,7 +86,7 @@ namespace Game
                     {
                         try
                         {
-                            shift = direction switch
+                            ValueTuple<int, int> shift = direction switch
                             {
                                 Input.Up => (y - 1, x),
                                 Input.Down => (y + 1, x),
@@ -106,6 +101,13 @@ namespace Game
                             if (cell > 0 && next_cell == 0)
                             {
                                 (cell, next_cell) = (next_cell, cell);
+
+                                checkNeeded = true;
+                            }
+                            else if ((cell != 0) && (cell == next_cell))
+                            {
+                                next_cell *= 2;
+                                cell = 0;
 
                                 checkNeeded = true;
                             }
