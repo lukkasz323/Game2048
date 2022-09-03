@@ -14,6 +14,45 @@ namespace Game
             Right
         }
 
+        static Input ReadUserInput()
+        {
+            return Console.ReadKey(true).Key switch
+            {
+                ConsoleKey.Escape => Input.Quit,
+                ConsoleKey.W => Input.Up,
+                ConsoleKey.S => Input.Down,
+                ConsoleKey.A => Input.Left,
+                ConsoleKey.D => Input.Right,
+                _ => Input.None
+            };
+        }
+
+        static bool BoardIsFull(int[,] board)
+        {
+            foreach (int n in board)
+            {
+                if (n == 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        static bool PlayerHasWon(int[,] board)
+        {
+            foreach (int n in board)
+            {
+                if (n >= 2048)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         static void UpdateScreen(int[,] board)
         {
             Console.Clear();
@@ -58,20 +97,7 @@ namespace Game
                     board[y, x] = 1;
                     break;
                 }
-            } 
-        }
-
-        static Input ReadUserInput()
-        {
-            return Console.ReadKey(true).Key switch
-            {
-                ConsoleKey.Escape => Input.Quit,
-                ConsoleKey.W => Input.Up,
-                ConsoleKey.S => Input.Down,
-                ConsoleKey.A => Input.Left,
-                ConsoleKey.D => Input.Right,
-                _ => Input.None
-            };
+            }
         }
 
         static void Move(Input direction, int[,] board)
@@ -115,20 +141,7 @@ namespace Game
                         catch (IndexOutOfRangeException) { }
                     }
                 }
-            }  
-        }
-
-        static bool BoardIsFull(int[,] board)
-        {
-            foreach (int n in board)
-            {
-                if (n == 0)
-                {
-                    return false;
-                }
             }
-
-            return true;
         }
 
         static void Run()
@@ -152,7 +165,7 @@ namespace Game
                     if (input == Input.Quit)
                     {
                         Console.WriteLine(" Quit!");
-                        return;
+                        break;
                     }
                     if (input != Input.None)
                     {
@@ -160,6 +173,12 @@ namespace Game
                     }
                 }
                 Move(input, board);
+                if (PlayerHasWon(board))
+                {
+                    UpdateScreen(board);
+                    Console.WriteLine(" You've won!");
+                    return;
+                }
             }
         }
 
